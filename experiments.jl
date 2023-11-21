@@ -71,14 +71,20 @@ df = vcat(dfs...);
 sort!(df, [:t, :specie_plasticity]);
 
 # %%
+resolution = (1000, 1000)
+fig = Figure(; resolution)
 specs = (
     data(df)
     * mapping(
         :t, :var,
-        row=:specie_plasticity => nonnumeric,
-        col=:site_climate_variance => nonnumeric,
+        col=:specie_plasticity => nonnumeric,
+        row=:site_climate_variance => nonnumeric,
         color=:replicate => nonnumeric,
     )
-    * (visual(Lines) * smooth() + visual(Scatter, markersize=2))
+    * (
+        visual(Lines) * smooth()
+    )
 )
-draw(specs; facet=(; linkxaxes=:minimal, linkyaxes=:minimal))
+colors = fill(:black, length(unique(df.replicate)))
+draw!(fig, specs; facet=(; linkxaxes=:minimal, linkyaxes=:none), palettes=(color=colors,))
+fig
