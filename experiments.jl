@@ -42,7 +42,7 @@ end
 
 allparams = Dict(
     "n_iter" => 10_000,
-    "site_climate_variance" => 1, # [0.5, 0.8, 1.1, 1.2, 1.5, 2, 2.5],
+    "site_climate_variance" => [0.5, 0.8, 1.1, 1.2, 1.5, 2, 2.5],
     "site_climate_carrying" => 80_000,
     "site_climate_inivalue" => 50,
     "specie_fecundity" => 20,
@@ -52,7 +52,7 @@ allparams = Dict(
     "specie_mutation_probability" => 0.01,
     "specie_mutation_variance" => 0.1,
     "specie_migration" => 0.0,
-    "replicate" => 1,
+    "replicate" => 1:10 |> collect,
 )
 
 dicts = dict_list(allparams);
@@ -75,10 +75,10 @@ specs = (
     data(df)
     * mapping(
         :t, :var,
-        color=:specie_plasticity => nonnumeric,
-        marker=:specie_plasticity => nonnumeric
+        row=:specie_plasticity => nonnumeric,
+        col=:site_climate_variance => nonnumeric,
+        color=:replicate => nonnumeric,
     )
-    * visual(Lines)
-    * visual(Scatter, markersize=2)
+    * (visual(Lines) * smooth() + visual(Scatter, markersize=2))
 )
-draw(specs)
+draw(specs; facet=(; linkxaxes=:minimal, linkyaxes=:minimal))
